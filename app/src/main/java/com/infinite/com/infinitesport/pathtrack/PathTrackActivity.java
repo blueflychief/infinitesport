@@ -1,9 +1,12 @@
 package com.infinite.com.infinitesport.pathtrack;
 
+import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -23,14 +26,21 @@ import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
 import com.infinite.com.infinitesport.R;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
-public class PathTrackActivity extends AppCompatActivity implements LocationSource {
+public class PathTrackActivity extends AppCompatActivity implements LocationSource, View.OnClickListener {
     private static final String TAG = "MainActivity";
     private AMap mAmap = null;
+
+    private Button bt_test;
+    private Button bt_real;
     public MapView mMapView = null;
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
@@ -51,44 +61,59 @@ public class PathTrackActivity extends AppCompatActivity implements LocationSour
         add(new LatLng(39.90381065, 116.63738251));
     }};
     private Marker mMoveMarker;
+    private File mTmpfile;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_path_track);
+        mMapView = (MapView) findViewById(R.id.map);
+        bt_test = (Button) findViewById(R.id.bt_test);
+        bt_real = (Button) findViewById(R.id.bt_real);
+        bt_test.setOnClickListener(this);
+        bt_real.setOnClickListener(this);
         initAMap(savedInstanceState);
+        initLocationServer();
         initData();
         initLocation();
-        drawTrack();
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                initMoveMarker();
-            }
-        }, 3000);
+
     }
 
     private void initData() {
         mMoveTrack = new ArrayList<>();
+        SimpleDateFormat dateFormat =
+                new SimpleDateFormat("yyyy-MM-dd");
+        mTmpfile = new File(Environment.getExternalStorageDirectory().getAbsolutePath() + File.separator + "mypath", dateFormat.format(new Date()) + "_path.txt");
+        Log.i(TAG, "------mTmpfile: " + mTmpfile);
+        if (!mTmpfile.getParentFile().exists()) {
+            mTmpfile.getParentFile().mkdir();
+        }
+        try {
+            mTmpfile.createNewFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        Log.i(TAG, "------mTmpfile: " + mTmpfile.exists());
     }
 
     private void initAMap(Bundle savedInstanceState) {
-        Log.i(TAG, "-------initAMap: " + savedInstanceState);
-        mMapView = (MapView) findViewById(R.id.map);
         Log.i(TAG, "------initAMap: " + mMapView);
         mMapView.onCreate(savedInstanceState);
         if (mAmap == null) {
             mAmap = mMapView.getMap();
-            mAmap.setLocationSource(this);// 设置定位监听，这句不写无法点击定位和显示小蓝点
-            mAmap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
-            mAmap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
-            // 设置定位的类型为定位模式：
-            // 定位（AMap.LOCATION_TYPE_LOCATE）、
-            // 跟随（AMap.LOCATION_TYPE_MAP_FOLLOW）
-            // 地图根据面向方向旋转（AMap.LOCATION_TYPE_MAP_ROTATE）三种模式
-            mAmap.setMyLocationType(AMap.LOCATION_TYPE_MAP_FOLLOW);
         }
+    }
+
+    private void initLocationServer() {
+        mAmap.setLocationSource(this);// 设置定位监听，这句不写无法点击定位和显示小蓝点
+        mAmap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
+        mAmap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
+        // 设置定位的类型为定位模式：
+        // 定位（AMap.LOCATION_TYPE_LOCATE）、
+        // 跟随（AMap.LOCATION_TYPE_MAP_FOLLOW）
+        // 地图根据面向方向旋转（AMap.LOCATION_TYPE_MAP_ROTATE）三种模式
+        mAmap.setMyLocationType(AMap.LOCATION_TYPE_MAP_FOLLOW);
     }
 
 
@@ -146,6 +171,8 @@ public class PathTrackActivity extends AppCompatActivity implements LocationSour
 
 //                    mOnLocationChangedListener.onLocationChanged(amapLocation);// 显示系统小蓝点
                     mMoveTrack.add(new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude()));   //存储当前经纬度
+                    String s = amapLocation.getLatitude() + "," + amapLocation.getLongitude();
+                    whiterSchedule(mTmpfile, s);
 
                 } else {
                     //显示错误信息ErrCode是错误码，errInfo是错误信息，详见错误码表。
@@ -213,25 +240,29 @@ public class PathTrackActivity extends AppCompatActivity implements LocationSour
     }
 
 
+    private void whiterSchedule(File file, final String s) {
+        //启动一个线程每5秒钟向日志文件写一次数据
+        Executor exec = Executors.newScheduledThreadPool(1);
+        exec.execute(new WriteThread(file, s));
+    }
+
+
     /**
      * 围绕操场的跑道画圆，根据速度显示颜色
      */
-    private void drawTrack() {
-        List<LatLng> mLatLngs = CaculateUtil.readLatLngs(CaculateUtil.coords);
+    private void drawTrack(List<LatLng> mLatLngs) {
         mAmap.addPolyline(new PolylineOptions()
                 .colorValues(CaculateUtil.caculateSpeedColor(mLatLngs, LOCATION_INTERVAL))
                 .addAll(mLatLngs)
                 .useGradient(true)
                 .width(10));
         moveToCurrent(mLatLngs.get(0).latitude, mLatLngs.get(0).longitude, 16);
-
     }
 
     /**
      * 播放运动轨迹
      */
-    private void initMoveMarker() {
-        PolylineOptions polylineOptions = CaculateUtil.getPolylineOptions(CaculateUtil.coords);
+    private void initMoveMarker(PolylineOptions polylineOptions) {
         Polyline line = mAmap.addPolyline(polylineOptions);
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.setFlat(true)
@@ -290,5 +321,29 @@ public class PathTrackActivity extends AppCompatActivity implements LocationSour
             }
 
         }.start();
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.bt_test:
+                drawTrack(CaculateUtil.readLatLngs(CaculateUtil.coords));
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        initMoveMarker(CaculateUtil.getPolylineOptions(CaculateUtil.coords));
+                    }
+                }, 2000);
+                break;
+            case R.id.bt_real:
+                drawTrack(FileUtil.logReader(mTmpfile));
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        initMoveMarker(FileUtil.logReader(mTmpfile));
+//                    }
+//                }, 2000);
+                break;
+        }
     }
 }
