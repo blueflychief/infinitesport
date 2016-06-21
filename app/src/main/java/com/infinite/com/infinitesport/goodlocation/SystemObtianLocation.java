@@ -1,4 +1,4 @@
-package com.infinite.com.infinitesport.pathtrack;
+package com.infinite.com.infinitesport.goodlocation;
 
 import android.Manifest;
 import android.content.Context;

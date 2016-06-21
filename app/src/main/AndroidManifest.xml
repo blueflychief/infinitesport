@@ -120,6 +120,10 @@
             android:label="@string/locationmodesource_demo"
             android:screenOrientation="portrait" />
         <activity
+            android:name=".goodlocation.GoodLocationActivity"
+            android:label="@string/locationmodesource_demo"
+            android:screenOrientation="portrait" />
+        <activity
             android:name=".location.LocationNetworkActivity"
             android:label="@string/locationNetwork_demo"
             android:screenOrientation="portrait" />

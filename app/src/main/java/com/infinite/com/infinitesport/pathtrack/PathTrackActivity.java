@@ -25,6 +25,7 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
 import com.infinite.com.infinitesport.R;
+import com.infinite.com.infinitesport.goodlocation.SystemObtianLocation;
 import com.infinite.com.infinitesport.util.MyLogger;
 
 import java.io.File;
@@ -80,10 +81,7 @@ public class PathTrackActivity extends AppCompatActivity implements LocationSour
 //        initLocation();
 
 //        AmapObtainLocation.getLocation().startLocation(this);
-//        SystemObtianLocation.getInstance().initLocation();
-
-        SimpleLocation simpleLocation=new SimpleLocation(getApplicationContext(),true,true,5000,true);
-        simpleLocation.beginUpdates();
+        SystemObtianLocation.getInstance().initLocation();
 
     }
 

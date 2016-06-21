@@ -27,6 +27,7 @@ import com.infinite.com.infinitesport.cloud.CloudActivity;
 import com.infinite.com.infinitesport.district.DistrictActivity;
 import com.infinite.com.infinitesport.district.DistrictWithBoundaryActivity;
 import com.infinite.com.infinitesport.geocoder.GeocoderActivity;
+import com.infinite.com.infinitesport.goodlocation.GoodLocationActivity;
 import com.infinite.com.infinitesport.indoor.IndoorMapActivity;
 import com.infinite.com.infinitesport.location.LocationModeSourceActivity;
 import com.infinite.com.infinitesport.offlinemap.OfflineMapActivity;
@@ -38,7 +39,6 @@ import com.infinite.com.infinitesport.overlay.MarkerActivity;
 import com.infinite.com.infinitesport.overlay.NavigateArrowOverlayActivity;
 import com.infinite.com.infinitesport.overlay.PolygonActivity;
 import com.infinite.com.infinitesport.overlay.PolylineActivity;
-import com.infinite.com.infinitesport.pathtrack.PathTrackActivity;
 import com.infinite.com.infinitesport.poisearch.PoiAroundSearchActivity;
 import com.infinite.com.infinitesport.poisearch.PoiKeywordSearchActivity;
 import com.infinite.com.infinitesport.poisearch.SubPoiSearchActivity;
@@ -90,7 +90,9 @@ public final class MainActivity extends ListActivity {
 			new DemoDetails(R.string.basic_map, R.string.basic_description,
 					BasicMapActivity.class),
 			new DemoDetails(R.string.path_track, R.string.path_track,
-					PathTrackActivity.class),
+					GoodLocationActivity.class),
+//			new DemoDetails(R.string.path_track, R.string.path_track,
+//					PathTrackActivity.class),
 			new DemoDetails(R.string.base_fragment_map,
 					R.string.base_fragment_description,
 					BaseMapFragmentActivity.class),

@@ -34,10 +34,10 @@ public class AmapObtainLocation implements AMapLocationListener {
             if (aMapLocation.getErrorCode() == AMapLocation.LOCATION_SUCCESS) {
                 AmapCityInfo cityInfo = new AmapCityInfo();
                 long time_stamp = aMapLocation.getTime();
-                MyLogger.i("-------time"+time_stamp);
-                MyLogger.i("-------Bearing"+aMapLocation.getBearing());
-                MyLogger.i("-------Satellites"+aMapLocation.getSatellites());
-                MyLogger.i("-------Speed"+aMapLocation.getSpeed());
+                MyLogger.i("-------time" + time_stamp);
+                MyLogger.i("-------Bearing" + aMapLocation.getBearing());
+                MyLogger.i("-------Satellites" + aMapLocation.getSatellites());
+                MyLogger.i("-------Speed" + aMapLocation.getSpeed());
                 cityInfo.setTime_stamp(time_stamp);
                 cityInfo.setTime(sdf.format(time_stamp));
                 cityInfo.setCity(aMapLocation.getCity());
@@ -81,8 +81,8 @@ public class AmapObtainLocation implements AMapLocationListener {
 
 
     public void stopLocation() {
-        locationClient.stopLocation();
         if (locationClient != null) {
+            locationClient.stopLocation();
             locationClient = null;
         }
         locationOption = null;
