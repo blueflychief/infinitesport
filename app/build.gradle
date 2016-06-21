@@ -5,7 +5,7 @@ android {
         infinitesport {
             keyAlias 'infinitesport'
             keyPassword 'infinitesport'
-            storeFile file('D:/AndroidStudioWorkspace/infinitesport/app/keystore/infinitesport.jks')
+            storeFile file('/keystore/infinitesport.jks')
             storePassword 'infinitesport'
         }
     }

@@ -25,6 +25,7 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
 import com.infinite.com.infinitesport.R;
+import com.infinite.com.infinitesport.util.MyLogger;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,7 +36,7 @@ import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class PathTrackActivity extends AppCompatActivity implements LocationSource, View.OnClickListener {
+public class PathTrackActivity extends AppCompatActivity implements LocationSource, View.OnClickListener, ILocationCallback {
     private static final String TAG = "MainActivity";
     private AMap mAmap = null;
 
@@ -74,9 +75,15 @@ public class PathTrackActivity extends AppCompatActivity implements LocationSour
         bt_test.setOnClickListener(this);
         bt_real.setOnClickListener(this);
         initAMap(savedInstanceState);
-        initLocationServer();
+//        initLocationServer();
         initData();
-        initLocation();
+//        initLocation();
+
+//        AmapObtainLocation.getLocation().startLocation(this);
+//        SystemObtianLocation.getInstance().initLocation();
+
+        SimpleLocation simpleLocation=new SimpleLocation(getApplicationContext(),true,true,5000,true);
+        simpleLocation.beginUpdates();
 
     }
 
@@ -239,6 +246,11 @@ public class PathTrackActivity extends AppCompatActivity implements LocationSour
         mMapView.onSaveInstanceState(outState);
     }
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        AmapObtainLocation.getLocation().stopLocation();
+    }
 
     private void whiterSchedule(File file, final String s) {
         //启动一个线程每5秒钟向日志文件写一次数据
@@ -345,5 +357,15 @@ public class PathTrackActivity extends AppCompatActivity implements LocationSour
 //                }, 2000);
                 break;
         }
+    }
+
+    @Override
+    public void onLocation(AmapCityInfo city_info) {
+        MyLogger.i("------当前定位信息：" + city_info.toString());
+    }
+
+    @Override
+    public void onLocationError(int errcode) {
+        MyLogger.i("------当前定位错误码：" + errcode);
     }
 }
