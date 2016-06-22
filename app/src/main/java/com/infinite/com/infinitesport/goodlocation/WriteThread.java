@@ -1,4 +1,4 @@
-package com.infinite.com.infinitesport.pathtrack;
+package com.infinite.com.infinitesport.goodlocation;
 
 import java.io.File;
 import java.io.IOException;
@@ -18,7 +18,7 @@ public class WriteThread implements Runnable {
     @Override
     public void run() {
         try {
-            FileUtil.logMsg(file, info);
+            FileUtil.writeLog(file, info);
         } catch (IOException e) {
             e.printStackTrace();
         }

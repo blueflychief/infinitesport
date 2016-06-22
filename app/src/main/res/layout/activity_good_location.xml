@@ -13,13 +13,47 @@
             android:id="@+id/bt_test"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="12sp"
             android:text="显示测试轨迹" />
         <Button
             android:id="@+id/bt_real"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="12sp"
             android:text="显示真实轨迹" />
     </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+            android:id="@+id/bt_start_amap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:text="开启高德" />
+        <Button
+            android:id="@+id/bt_stop_amap"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:text="停止高德" />
+
+        <Button
+            android:id="@+id/bt_start_gps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:text="开启GPS定位" />
+        <Button
+            android:id="@+id/bt_stop_gps"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:text="停止GPS定位" />
+    </LinearLayout>
+
 
     <com.amap.api.maps.MapView
         android:id="@+id/map"

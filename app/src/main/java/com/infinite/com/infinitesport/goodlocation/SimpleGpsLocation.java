@@ -28,7 +28,7 @@ import java.util.Random;
 /**
  * Utility class for easy access to the device location on Android
  */
-public class SimpleLocation {
+public class SimpleGpsLocation {
 
 
     private GpsStatus.Listener mGpsStatusListener;
@@ -39,7 +39,7 @@ public class SimpleLocation {
     public interface PositionListener {
 
         /**
-         * Called whenever the device's position changes so that you can call {@link SimpleLocation#getPosition()}
+         * Called whenever the device's position changes so that you can call {@link SimpleGpsLocation#getPosition()}
          */
         void onPositionChanged(Location location);
 
@@ -120,26 +120,34 @@ public class SimpleLocation {
     private PositionListener mListener;
 
 
-    public SimpleLocation(final Context context) {
+    public SimpleGpsLocation(final Context context) {
         this(context, false);
     }
 
 
-    public SimpleLocation(final Context context, final boolean requireFine) {
+    public SimpleGpsLocation(final Context context, final boolean requireFine) {
         this(context, requireFine, false);
     }
 
 
-    public SimpleLocation(final Context context, final boolean requireFine, final boolean passive) {
+    public SimpleGpsLocation(final Context context, final boolean requireFine, final boolean passive) {
         this(context, requireFine, passive, INTERVAL_DEFAULT);
     }
 
-    public SimpleLocation(final Context context, final boolean requireFine, final boolean passive, final long interval) {
+    public SimpleGpsLocation(final Context context, final boolean requireFine, final boolean passive, final long interval) {
         this(context, requireFine, passive, interval, false);
     }
 
 
-    public SimpleLocation(final Context context, final boolean requireFine, final boolean passive, final long interval, final boolean requireNewLocation) {
+    /**
+     *
+     * @param context
+     * @param requireFine   是否精确定位
+     * @param passive       是否被动定位
+     * @param interval      定位时间间隔
+     * @param requireNewLocation    是否使用缓存位置
+     */
+    public SimpleGpsLocation(final Context context, final boolean requireFine, final boolean passive, final long interval, final boolean requireNewLocation) {
         mLocationManager = (LocationManager) context.getApplicationContext().getSystemService(Context.LOCATION_SERVICE);
         mRequireFine = requireFine;
         mPassive = passive;
@@ -155,7 +163,7 @@ public class SimpleLocation {
     /**
      * Attaches or detaches a listener that informs about certain events
      *
-     * @param listener the `SimpleLocation.PositionListener` instance to attach or `null` to detach
+     * @param listener the `SimpleGpsLocation.PositionListener` instance to attach or `null` to detach
      */
     public void setPositionListener(final PositionListener listener) {
         mListener = listener;
@@ -193,7 +201,17 @@ public class SimpleLocation {
         }
         //如果mPassive为true，则addGpsStatusListener无效
         mLocationManager.addGpsStatusListener(mGpsStatusListener);
+        // 绑定监听，有4个参数
+// 参数1，设备：有GPS_PROVIDER和NETWORK_PROVIDER两种
+// 参数2，位置信息更新周期，单位毫秒
+// 参数3，位置变化最小距离：当位置距离变化超过此值时，将更新位置信息
+// 参数4，监听
+// 备注：参数2和3，如果参数3不为0，则以参数3为准；参数3为0，则通过时间来定时更新；两者为0，则随时刷新
+// 1秒更新一次，或最小位移变化超过1米更新一次；
+// 注意：此处更新准确度非常低，推荐在service里面启动一个Thread，在run中sleep(10000);然后执行handler.sendMessage(),更新位置
         mLocationManager.requestLocationUpdates(getProviderName(), mInterval, 0, mLocationListener);
+
+        MyLogger.i("-----GPS定位开始");
     }
 
     /**
@@ -215,6 +233,8 @@ public class SimpleLocation {
             mLocationManager.removeGpsStatusListener(mGpsStatusListener);
             mGpsStatusListener = null;
         }
+
+        MyLogger.i("-----GPS定位停止");
     }
 
     /**
@@ -442,7 +462,7 @@ public class SimpleLocation {
         // 设置是否需要海拔信息
         mCriteria.setAltitudeRequired(true);
         // 设置对电源的需求
-        mCriteria.setPowerRequirement(Criteria.POWER_LOW);
+        mCriteria.setPowerRequirement(Criteria.ACCURACY_HIGH);
     }
 
     private String getProviderName() {

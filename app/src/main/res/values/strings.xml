@@ -49,6 +49,7 @@
     <string name="locationsource_demo">Location小蓝点功能</string>
     <string name="locationsource_description">介绍对系统定位显示小蓝点功能</string>
     <string name="locationmodesource_demo">Location三种模式</string>
+    <string name="location_gps_amap">纯GPS与高德定位</string>
     <string name="locationmodesource_description">介绍定位、追随、选择不同模式使用</string>
     <string name="locationGPS_demo">gps定位功能</string>
     <string name="locationGPS_description">介绍如何使用gps定位</string>

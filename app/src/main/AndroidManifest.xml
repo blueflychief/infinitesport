@@ -121,11 +121,7 @@
             android:screenOrientation="portrait" />
         <activity
             android:name=".goodlocation.GoodLocationActivity"
-            android:label="@string/locationmodesource_demo"
-            android:screenOrientation="portrait" />
-        <activity
-            android:name=".location.LocationNetworkActivity"
-            android:label="@string/locationNetwork_demo"
+            android:label="@string/location_gps_amap"
             android:screenOrientation="portrait" />
         <activity
             android:name=".geocoder.GeocoderActivity"
